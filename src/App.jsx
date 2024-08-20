@@ -6,25 +6,26 @@ import './assets/styles/all.scss';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import axios from 'axios';
+
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-
+import Dashboard from './pages/admin/Dashboard';
+import AdminProducts from './pages/admin/AdminProducts';
 function App() {
   const [count, setCount] = useState(0);
   //測試是否可以連結到環境變數
-  useEffect(() => {
-    console.log(
-      import.meta.env.VITE_REACT_APP_API_URL,
-      import.meta.env.VITE_REACT_APP_API_PATH
-    );
-    (async () => {
-      const res = await axios.get(
-        `/v2/api/${import.meta.env.VITE_REACT_APP_API_PATH}/products/all`
-      );
-      console.log(res);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   console.log(
+  //     import.meta.env.VITE_REACT_APP_API_URL,
+  //     import.meta.env.VITE_REACT_APP_API_PATH
+  //   );
+  //   (async () => {
+  //     const res = await axios.get(
+  //       `/v2/api/${import.meta.env.VITE_REACT_APP_API_PATH}/products/all`
+  //     );
+  //     console.log(res);
+  //   })();
+  // }, []);
   return (
     <>
       <div>
@@ -34,6 +35,9 @@ function App() {
         <div className='App'>
           <Routes>
             <Route path='/login' element={<Login />}></Route>
+            <Route path='/admin' element={<Dashboard />}>
+              <Route path='products' element={<AdminProducts />}></Route>
+            </Route>
           </Routes>
         </div>
         <nav className='navbar navbar-expand-lg bg-body-tertiary'>

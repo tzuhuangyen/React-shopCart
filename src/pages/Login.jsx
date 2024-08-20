@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 const Login = () => {
-  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const [loginState, setLoginState] = useState({});
   const [data, setData] = useState({
     username: '',
     password: '',
@@ -23,29 +26,34 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post('/v2/admin/signin', data);
-      const { token } = res.data;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const { token, expired } = res.data;
+      // 儲存token到cookie
+      document.cookie = `hexToken=${token}; expires=${new Date(
+        expired
+      ).toUTCString()}; path=/`;
+      console.log('Setting cookies:', document.cookie);
+      console.log('Token stored in cookies:', token);
 
-      const productRes = await axios.get(
-        `/v2/api/${import.meta.env.REACT_APP_API_PATH}/admin/products/all`
-      );
-      console.log(productRes);
+      if (res.data.success) {
+        navigate('/admin/products');
+      }
     } catch (error) {
-      const message = error.response
-        ? error.response.data.message
-        : error.message;
-      setErrorMessage(message);
+      setLoginState(error.response.data);
     }
   };
-
   return (
     <div className='container py-5'>
       <div className='row justify-content-center'>
         <div className='col-md-6'>
           <h2>登入帳號</h2>
 
-          <div className='alert alert-danger' role='alert'>
-            錯誤訊息
+          <div
+            className={`alert alert-danger ${
+              loginState.message ? 'd-block' : 'd-none'
+            } `}
+            role='alert'
+          >
+            {loginState.message}
           </div>
           <div className='mb-2'>
             <label htmlFor='email' className='form-label w-100'>
